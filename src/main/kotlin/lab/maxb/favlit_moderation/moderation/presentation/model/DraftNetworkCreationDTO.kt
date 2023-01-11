@@ -6,12 +6,11 @@ import java.util.*
 data class DraftNetworkCreationDTO(
     val name: String,
     val genres: List<UUID> = emptyList(),
-    val authorId: UUID,
     val description: String? = null,
     val attachments: List<AttachmentNetworkDTO> = emptyList(),
 )
 
-fun DraftNetworkCreationDTO.toDomain() = Draft(
+fun DraftNetworkCreationDTO.toDomain(authorId: UUID) = Draft(
     name = name,
     genres = genres,
     authorId = authorId,

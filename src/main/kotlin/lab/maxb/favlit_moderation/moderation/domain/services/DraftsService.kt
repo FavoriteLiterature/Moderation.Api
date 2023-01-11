@@ -33,8 +33,11 @@ class DraftsServiceImpl @Autowired constructor(
     override fun getDraft(id: UUID) = drafts.getById(id) ?: throw NotFoundException()
 
     override fun updateDraft(draft: Draft) {
-        if (drafts.existsById(draft.id)) {
-            val validModel = validateModel(draft)
+        val oldDraft = drafts.getById(draft.id)
+        if (oldDraft != null) {
+            val validModel = validateModel(
+                draft.copy(authorId = oldDraft.authorId)
+            )
             drafts.save(validModel)
         } else throw NotFoundException()
     }
