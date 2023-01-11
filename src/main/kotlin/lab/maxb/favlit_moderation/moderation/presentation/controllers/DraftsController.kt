@@ -3,7 +3,7 @@ package lab.maxb.favlit_moderation.moderation.presentation.controllers
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import lab.maxb.favlit_moderation.SECURITY_SCHEME
 import lab.maxb.favlit_moderation.core.presentation.models.Response
-import lab.maxb.favlit_moderation.moderation.domain.exceptions.NotAllowed
+import lab.maxb.favlit_moderation.moderation.domain.exceptions.ForbiddenException
 import lab.maxb.favlit_moderation.moderation.domain.models.Roles
 import lab.maxb.favlit_moderation.moderation.domain.models.User
 import lab.maxb.favlit_moderation.moderation.domain.services.DraftsService
@@ -47,7 +47,7 @@ class DraftsController @Autowired constructor(
     fun getDraft(@PathVariable id: UUID, auth: Authentication) = service.getDraft(id).toNetwork().also {
         val user = auth.user
         if (it.authorId != user.id && user.roles.contains(User.Role.READ_OWNED_WORKS))
-            throw NotAllowed()
+            throw ForbiddenException()
     }
 
     @PutMapping("/{id}")
