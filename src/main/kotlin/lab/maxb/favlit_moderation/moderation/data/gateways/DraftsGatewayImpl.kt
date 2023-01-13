@@ -8,6 +8,7 @@ import lab.maxb.favlit_moderation.moderation.domain.models.Draft
 import lab.maxb.favlit_moderation.moderation.domain.services.MQTTSender
 import lab.maxb.favlit_moderation.moderation.presentation.model.toNetwork
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -33,9 +34,10 @@ class DraftsGatewayImpl @Autowired constructor(
 
     override fun getById(id: UUID) = drafts.findByIdOrNull(id)?.toDomain()
 
-    override fun getAll() = drafts.findByOrderByIdAsc().map { it.toDomain() }
+    override fun getAll(page: Pageable) = drafts.findByOrderByIdAsc(page).map { it.toDomain() }
 
-    override fun getAllByAuthorId(authorId: UUID) = drafts.findByAuthorId(authorId).map { it.toDomain() }
+    override fun getAllByAuthorId(authorId: UUID, page: Pageable) =
+        drafts.findByAuthorId(authorId, page).map { it.toDomain() }
 
     override fun verify(model: Draft) {
         mqttSender.send(model.toNetwork())

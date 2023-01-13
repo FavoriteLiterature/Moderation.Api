@@ -6,11 +6,13 @@ import lab.maxb.favlit_moderation.moderation.domain.models.Attachment
 import lab.maxb.favlit_moderation.moderation.domain.models.Draft
 import lab.maxb.favlit_moderation.moderation.domain.models.isCover
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
 
 interface DraftsService {
-    fun getDrafts(authorId: UUID?): List<Draft>
+    fun getDrafts(authorId: UUID?, page: Pageable): Page<Draft>
     fun addDraft(draft: Draft): UUID
     fun getDraft(id: UUID): Draft
     fun updateDraft(draft: Draft)
@@ -21,9 +23,9 @@ interface DraftsService {
 class DraftsServiceImpl @Autowired constructor(
     private val drafts: DraftsGateway,
 ) : DraftsService {
-    override fun getDrafts(authorId: UUID?) = authorId?.let {
-        drafts.getAllByAuthorId(it)
-    } ?: drafts.getAll()
+    override fun getDrafts(authorId: UUID?, page: Pageable) = authorId?.let {
+        drafts.getAllByAuthorId(it, page)
+    } ?: drafts.getAll(page)
 
     override fun addDraft(draft: Draft): UUID {
         val validModel = validateModel(draft)
