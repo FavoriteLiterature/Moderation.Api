@@ -10,4 +10,5 @@ interface DraftsGateway {
     fun getById(id: UUID): Draft?
     fun getAll(): List<Draft>
     fun getAllByAuthorId(authorId: UUID): List<Draft>
+    fun verify(model: Draft)
 }

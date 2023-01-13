@@ -5,6 +5,8 @@ import lab.maxb.favlit_moderation.moderation.data.models.toDomain
 import lab.maxb.favlit_moderation.moderation.data.models.toLocal
 import lab.maxb.favlit_moderation.moderation.domain.gateways.DraftsGateway
 import lab.maxb.favlit_moderation.moderation.domain.models.Draft
+import lab.maxb.favlit_moderation.moderation.domain.services.MQTTSender
+import lab.maxb.favlit_moderation.moderation.presentation.model.toNetwork
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
@@ -14,6 +16,7 @@ import java.util.*
 @Repository
 class DraftsGatewayImpl @Autowired constructor(
     private val drafts: DraftRepository,
+    private val mqttSender: MQTTSender,
 ) : DraftsGateway {
     @Transactional
     override fun save(model: Draft): UUID {
@@ -33,4 +36,9 @@ class DraftsGatewayImpl @Autowired constructor(
     override fun getAll() = drafts.findByOrderByIdAsc().map { it.toDomain() }
 
     override fun getAllByAuthorId(authorId: UUID) = drafts.findByAuthorId(authorId).map { it.toDomain() }
+
+    override fun verify(model: Draft) {
+        mqttSender.send(model.toNetwork())
+        deleteById(model.id)
+    }
 }

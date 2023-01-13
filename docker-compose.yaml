@@ -14,6 +14,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
 version: '3'
 volumes:
   favorite_literature_moderation_api_db_volume:

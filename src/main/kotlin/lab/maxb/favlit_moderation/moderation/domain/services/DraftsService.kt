@@ -19,7 +19,7 @@ interface DraftsService {
 
 @Service
 class DraftsServiceImpl @Autowired constructor(
-    private val drafts: DraftsGateway
+    private val drafts: DraftsGateway,
 ) : DraftsService {
     override fun getDrafts(authorId: UUID?) = authorId?.let {
         drafts.getAllByAuthorId(it)
@@ -33,21 +33,19 @@ class DraftsServiceImpl @Autowired constructor(
     override fun getDraft(id: UUID) = drafts.getById(id) ?: throw NotFoundException()
 
     override fun updateDraft(draft: Draft) {
-        val oldDraft = drafts.getById(draft.id)
-        if (oldDraft != null) {
-            val validModel = validateModel(
-                draft.copy(authorId = oldDraft.authorId)
-            )
-            drafts.save(validModel)
-        } else throw NotFoundException()
+        val oldDraft = drafts.getById(draft.id) ?: throw NotFoundException()
+        val validModel = validateModel(
+            draft.copy(authorId = oldDraft.authorId)
+        )
+        drafts.save(validModel)
     }
 
     override fun verifyDraft(id: UUID, verified: Boolean) {
-        if (!drafts.existsById(id))
-            throw NotFoundException()
+        val draft = drafts.getById(id) ?: throw NotFoundException()
         if (verified)
-            TODO("Send copy to works service")
-        drafts.deleteById(id)
+            drafts.verify(draft)
+        else
+            drafts.deleteById(id)
     }
 
     private fun validateModel(draft: Draft) = draft.let(::validateAttachments)
