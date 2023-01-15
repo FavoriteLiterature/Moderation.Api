@@ -1,14 +1,25 @@
 services:
+  FavLitModerationApi:
+    image: maxbqb/favorite-literature-moderation-api:latest
+    environment:
+      - DB_HOST=FavLitModerationApiDb
+      - DB_NAME=$MODERATION_DB_NAME
+      - DB_USERNAME=$MODERATION_DB_USERNAME
+      - DB_PASSWORD=$MODERATION_DB_PASSWORD
+      - MQTT_HOST=rabbitmq
+    ports:
+      - 8080:8080
+    depends_on:
+      - FavLitModerationApiDb
+      - rabbitmq
   FavLitModerationApiDb:
     image: postgres:latest
     volumes:
       - favorite_literature_moderation_api_db_volume:/var/lib/postgresql/data:rw
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
-    ports:
-      - 30432:5432
+      - POSTGRES_PASSWORD=$MODERATION_DB_PASSWORD
+      - POSTGRES_USER=$MODERATION_DB_USERNAME
+      - POSTGRES_DB=$MODERATION_DB_NAME
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
@@ -16,9 +27,6 @@ services:
       retries: 5
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    ports:
-      - 5672:5672
-      - 15672:15672
 version: '3'
 volumes:
   favorite_literature_moderation_api_db_volume:
