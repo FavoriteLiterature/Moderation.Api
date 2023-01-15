@@ -20,7 +20,7 @@ class SecurityConfig {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         val authenticationManager = authManager(http)
-        http.authorizeRequests().antMatchers("/docs", "/docs/**", "/swagger-ui/**")
+        http.authorizeRequests().antMatchers("/docs", "/docs/**", "/swagger-ui/**", "/actuator/health")
             .permitAll().anyRequest().authenticated().and().csrf().disable()
             .authenticationManager(authenticationManager)
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
