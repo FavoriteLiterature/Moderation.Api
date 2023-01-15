@@ -1,6 +1,8 @@
 package lab.maxb.favlit_moderation.moderation.data.models
 
 import lab.maxb.favlit_moderation.moderation.domain.models.Draft
+import org.hibernate.annotations.LazyCollection
+import org.hibernate.annotations.LazyCollectionOption
 import java.util.*
 import javax.persistence.*
 
@@ -19,6 +21,7 @@ open class DraftLocalDTO {
     @Column(name = "name", nullable = false)
     open lateinit var name: String
 
+    @LazyCollection(LazyCollectionOption.FALSE)
     @ElementCollection
     @CollectionTable(name = "draft_genres", joinColumns = [JoinColumn(name = "draft_id")])
     @Column(name = "genre")
@@ -30,7 +33,7 @@ open class DraftLocalDTO {
     @Column(name = "description", length = 2000)
     open var description: String? = null
 
-    @OneToMany(mappedBy = "draft", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "draft", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     open var attachments: MutableList<AttachmentLocalDTO> = mutableListOf()
 }
 

@@ -16,3 +16,4 @@ data class Attachment(
 }
 
 inline val Attachment.isCover get() = type == Attachment.Type.Cover
+inline val Attachment.canBeCover get() = type != Attachment.Type.Document

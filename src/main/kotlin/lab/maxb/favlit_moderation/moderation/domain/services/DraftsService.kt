@@ -1,9 +1,11 @@
 package lab.maxb.favlit_moderation.moderation.domain.services
 
+import lab.maxb.favlit_moderation.moderation.domain.exceptions.ForbiddenException
 import lab.maxb.favlit_moderation.moderation.domain.exceptions.NotFoundException
 import lab.maxb.favlit_moderation.moderation.domain.gateways.DraftsGateway
 import lab.maxb.favlit_moderation.moderation.domain.models.Attachment
 import lab.maxb.favlit_moderation.moderation.domain.models.Draft
+import lab.maxb.favlit_moderation.moderation.domain.models.canBeCover
 import lab.maxb.favlit_moderation.moderation.domain.models.isCover
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -36,9 +38,9 @@ class DraftsServiceImpl @Autowired constructor(
 
     override fun updateDraft(draft: Draft) {
         val oldDraft = drafts.getById(draft.id) ?: throw NotFoundException()
-        val validModel = validateModel(
-            draft.copy(authorId = oldDraft.authorId)
-        )
+        if (draft.authorId != oldDraft.authorId)
+            throw ForbiddenException()
+        val validModel = validateModel(draft)
         drafts.save(validModel)
     }
 
@@ -62,6 +64,8 @@ class DraftsServiceImpl @Autowired constructor(
             if (it == -1) 0
             else it
         }
+        if (!attachments[firstCover].canBeCover)
+            return attachments
         return attachments.mapIndexed { i, it ->
             when {
                 i == firstCover -> it.copy(type = Attachment.Type.Cover)
