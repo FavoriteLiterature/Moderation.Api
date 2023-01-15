@@ -51,7 +51,7 @@ class DraftsController @Autowired constructor(
     @RolesAllowed(Roles.READ_ALL_WORKS, Roles.READ_OWNED_WORKS)
     fun getDraft(@PathVariable id: UUID, auth: Authentication) = service.getDraft(id).toNetwork().also {
         val user = auth.user
-        if (it.authorId != user.id && user.roles.contains(User.Role.READ_OWNED_WORKS))
+        if (it.authorId != user.id && !user.roles.contains(User.Role.READ_ALL_WORKS))
             throw ForbiddenException()
     }
 
