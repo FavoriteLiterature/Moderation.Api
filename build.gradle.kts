@@ -41,6 +41,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.hsqldb:hsqldb")
     testImplementation("io.zonky.test:embedded-database-spring-test:2.2.0")
     testImplementation("org.springframework.amqp:spring-rabbit-test")
 }
